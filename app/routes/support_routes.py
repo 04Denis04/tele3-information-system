@@ -1,7 +1,7 @@
-"""support_routes.py — раздел поддержки: обращения пользователей."""
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.db import query, execute
 from app.auth import role_required, login_required
+from app.routes.utils import get_page
 
 bp = Blueprint('support', __name__)
 

@@ -1,4 +1,3 @@
-"""tariff_routes.py"""
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.db import query, execute
 from app.auth import role_required, login_required

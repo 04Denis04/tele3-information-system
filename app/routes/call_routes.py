@@ -1,7 +1,7 @@
-"""call_routes.py"""
 from flask import Blueprint, render_template, request
 from app.db import query
 from app.auth import role_required, login_required
+from app.routes.utils import get_page
 
 bp = Blueprint('calls', __name__)
 

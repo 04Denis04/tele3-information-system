@@ -1,13 +1,9 @@
-"""sim_routes.py — управление SIM-картами.
-Доступ: admin, support, security_admin, billing_operator (список — без detail только чтение)
-"""
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.db import query, execute, call_proc
 from app.auth import role_required, login_required
+from app.routes.utils import get_page
 
 bp = Blueprint('sim', __name__)
-
-# billing_operator видит SIM в sidebar → должен иметь доступ к index/detail
 ALLOWED = ('admin', 'support', 'security_admin', 'billing_operator')
 
 

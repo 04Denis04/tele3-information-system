@@ -1,4 +1,3 @@
-"""Простой smoke-тест страницы авторизации."""
 import unittest
 
 from app import create_app

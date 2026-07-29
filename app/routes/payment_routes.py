@@ -1,9 +1,7 @@
-"""payment_routes.py — платежи.
-security_admin получал 403 при создании платежа → исправлено.
-"""
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app.db import query, call_proc, execute
 from app.auth import role_required, login_required
+from app.routes.utils import get_page
 
 bp = Blueprint('payments', __name__)
 

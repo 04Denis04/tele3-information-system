@@ -1,8 +1,8 @@
-"""cabinet_routes.py — личный кабинет абонента (полный self-service)."""
 from flask import Blueprint, render_template, session, redirect, url_for, flash, request
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.db import query, execute, call_proc
 from app.auth import role_required, login_required
+from app.routes.utils import get_page
 
 bp = Blueprint('cabinet', __name__)
 
@@ -22,9 +22,6 @@ def _log_security(action, details=''):
         )
     except Exception:
         pass  # таблица может называться иначе; не критично
-
-
-# ── Главная страница кабинета ────────────────────────────────
 
 @bp.route('/')
 @login_required
@@ -74,9 +71,6 @@ def index():
         sub=sub, sim_cards=sim_cards, payments=payments,
         calls=calls, sms_list=sms_list, tickets=tickets)
 
-
-# ── Смена пароля ─────────────────────────────────────────────
-
 @bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
 @role_required('subscriber')
@@ -105,9 +99,6 @@ def change_password():
 
     return render_template('cabinet/change_password.html')
 
-
-# ── Мои SIM-карты ────────────────────────────────────────────
-
 @bp.route('/sims')
 @login_required
 @role_required('subscriber')
@@ -129,7 +120,6 @@ def change_tariff(sim_id):
     if not sub:
         flash('Профиль абонента не найден.', 'danger')
         return redirect(url_for('cabinet.index'))
-    # Проверяем, что SIM принадлежит этому абоненту
     sim = query("SELECT id FROM tele3.v_sim_cards WHERE id=%s AND subscriber_id=%s", (sim_id, sub['id']), fetch='one')
     if not sim:
         flash('SIM-карта не найдена.', 'danger')
@@ -168,9 +158,6 @@ def block_sim(sim_id):
         flash(f'Ошибка: {e}', 'danger')
     return redirect(url_for('cabinet.my_sims'))
 
-
-# ── Услуги ───────────────────────────────────────────────────
-
 @bp.route('/services')
 @login_required
 @role_required('subscriber')
@@ -181,7 +168,6 @@ def my_services():
     sim_cards = query("SELECT * FROM tele3.v_sim_cards WHERE subscriber_id=%s ORDER BY phone_number",
                       (sub['id'],), fetch='all') or []
     all_svcs = query("SELECT * FROM tele3.services WHERE is_active=TRUE ORDER BY name", fetch='all') or []
-    # Собираем подключённые услуги для каждой SIM
     connected = {}
     for s in sim_cards:
         try:
@@ -217,9 +203,6 @@ def toggle_service(sim_id):
     except Exception as e:
         flash(f'Ошибка: {e}', 'danger')
     return redirect(url_for('cabinet.my_services'))
-
-
-# ── Платежи ──────────────────────────────────────────────────
 
 @bp.route('/payments')
 @login_required
@@ -265,9 +248,6 @@ def make_payment():
         except Exception as e:
             flash(f'Ошибка при оплате: {e}', 'danger')
     return render_template('cabinet/make_payment.html', sub=sub)
-
-
-# ── Звонки и SMS ─────────────────────────────────────────────
 
 @bp.route('/calls')
 @login_required
@@ -327,9 +307,6 @@ def my_sms():
     return render_template('cabinet/sms.html', sub=sub, sim_cards=sim_cards,
                            sms_list=sms_list, selected_sim=int(sim_id) if sim_id else None,
                            page=page, per_page=per_page, total=total)
-
-
-# ── Обращения в поддержку ────────────────────────────────────
 
 @bp.route('/tickets')
 @login_required

@@ -1,6 +1,3 @@
-"""
-auth_routes.py — авторизация и выход.
-"""
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.db import query, execute
@@ -27,8 +24,6 @@ def login():
         if not username or not password:
             flash('Введите логин и пароль.', 'warning')
             return render_template('auth/login.html')
-
-        # Параметризованный запрос — защита от SQL-инъекций
         user = query(
             """SELECT u.id, u.username, u.password_hash, u.full_name,
                       u.is_active, r.name AS role
@@ -49,20 +44,14 @@ def login():
         if not check_password_hash(user['password_hash'], password):
             flash('Неверный логин или пароль.', 'danger')
             return render_template('auth/login.html')
-
-        # Сессия
         session.permanent = True
         session['user_id']  = user['id']
         session['username'] = user['username']
         session['role']     = user['role']
         session['fullname'] = user['full_name'] or user['username']
-
-        # Обновляем last_login
         execute("UPDATE tele3.users SET last_login = NOW() WHERE id = %s", (user['id'],))
 
         flash(f'Добро пожаловать, {session["fullname"]}!', 'success')
-
-        # Редирект по роли
         role = user['role']
         if role == 'admin':
             return redirect(url_for('admin.dashboard'))

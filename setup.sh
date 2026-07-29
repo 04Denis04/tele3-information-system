@@ -1,8 +1,4 @@
 #!/bin/bash
-# ============================================================
-# setup.sh — Установка и запуск ИС «ТЕЛЕ 3» на Astra Linux
-# Выполнять от имени пользователя с sudo-правами
-# ============================================================
 
 set -e
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
@@ -17,18 +13,19 @@ DB_PASS_APP="${DB_PASS_APP:-change-me-before-running}"
 export DB_PASS_APP
 FLASK_PORT=5000
 
-# ── 1. Системные зависимости ────────────────────────────────
+if [ "$DB_PASS_APP" = "change-me-before-running" ]; then
+    error "Перед запуском задайте переменную DB_PASS_APP"
+fi
+
 info "Установка системных пакетов..."
 sudo apt-get update -q
 sudo apt-get install -y python3 python3-pip python3-venv \
     postgresql postgresql-contrib libpq-dev
 
-# ── 2. PostgreSQL ────────────────────────────────────────────
 info "Настройка PostgreSQL..."
 sudo systemctl enable postgresql
 sudo systemctl start postgresql
 
-# Создаём БД и пользователей
 sudo -u postgres psql << 'PSQL'
 SELECT 'CREATE DATABASE tele3 ENCODING ''UTF8'''
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname='tele3') \gexec
@@ -38,8 +35,10 @@ info "Применение схемы БД..."
 SCHEMA_FILE="$(dirname "$0")/tele3_database.sql"
 [ -f "$SCHEMA_FILE" ] || error "Файл tele3_database.sql не найден. Добавьте схему БД перед запуском setup.sh."
 sudo -u postgres psql -d tele3 -f "$SCHEMA_FILE"
+sudo -u postgres psql -v app_password="$DB_PASS_APP" -d tele3 <<'PSQL'
+SELECT format('ALTER ROLE tele3_app PASSWORD %L', :'app_password') \gexec
+PSQL
 
-# ── 3. Приложение ────────────────────────────────────────────
 info "Копирование приложения в $APP_DIR..."
 sudo mkdir -p "$APP_DIR"
 sudo cp -r "$(dirname "$0")/." "$APP_DIR/"
@@ -50,7 +49,6 @@ python3 -m venv "$APP_DIR/venv"
 "$APP_DIR/venv/bin/pip" install --upgrade pip -q
 "$APP_DIR/venv/bin/pip" install -r "$APP_DIR/requirements.txt" -q
 
-# ── 4. Systemd-сервис ────────────────────────────────────────
 info "Создание systemd-сервиса..."
 sudo tee /etc/systemd/system/tele3.service > /dev/null << EOF
 [Unit]
@@ -79,19 +77,15 @@ sudo systemctl daemon-reload
 sudo systemctl enable tele3
 sudo systemctl start tele3
 
-# ── 5. Проверка ──────────────────────────────────────────────
 sleep 2
 if systemctl is-active --quiet tele3; then
     IP=$(hostname -I | awk '{print $1}')
-    info "=================================================="
     info "ИС ТЕЛЕ 3 успешно запущена!"
     info "Адрес для клиентской VM: http://${IP}:${FLASK_PORT}"
-    info "=================================================="
 else
     error "Сервис не запустился. Проверьте: sudo journalctl -u tele3 -n 30"
 fi
 
-# ── 6. Настройка хэшей паролей по умолчанию ─────────────────
 info "Создание тестовых пользователей с реальными хешами..."
 "$APP_DIR/venv/bin/python3" << 'PYEOF'
 import os
@@ -123,7 +117,6 @@ conn.close()
 print("Готово!")
 PYEOF
 
-# ── 7. Создание таблиц tickets и security_log ────────────────
 info "Применение миграции tickets/security_log..."
 sudo -u postgres psql -d tele3 -f "$(dirname "$0")/migrate_tickets.sql" 2>/dev/null || true
 info "Миграция применена."

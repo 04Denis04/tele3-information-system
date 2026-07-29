@@ -1,4 +1,3 @@
--- Таблица обращений в поддержку (если не существует)
 CREATE TABLE IF NOT EXISTS tele3.tickets (
     id              SERIAL PRIMARY KEY,
     subscriber_id   INTEGER NOT NULL REFERENCES tele3.subscribers(id) ON DELETE CASCADE,
@@ -14,8 +13,6 @@ CREATE TABLE IF NOT EXISTS tele3.tickets (
 
 CREATE INDEX IF NOT EXISTS idx_tickets_subscriber ON tele3.tickets(subscriber_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_status     ON tele3.tickets(status);
-
--- Таблица security_log (если не существует)
 CREATE TABLE IF NOT EXISTS tele3.security_log (
     id         SERIAL PRIMARY KEY,
     user_id    INTEGER REFERENCES tele3.users(id),
@@ -24,8 +21,6 @@ CREATE TABLE IF NOT EXISTS tele3.security_log (
     ip_address VARCHAR(45),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
--- Доступ для приложения
 GRANT SELECT, INSERT, UPDATE ON tele3.tickets TO tele3_app;
 GRANT USAGE, SELECT ON SEQUENCE tele3.tickets_id_seq TO tele3_app;
 GRANT SELECT, INSERT ON tele3.security_log TO tele3_app;

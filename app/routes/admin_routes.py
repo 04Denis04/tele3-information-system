@@ -1,11 +1,8 @@
-"""
-admin_routes.py — административная панель.
-Доступ: admin, security_admin
-"""
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash
 from app.db import query, execute, call_proc
 from app.auth import role_required, login_required
+from app.routes.utils import get_page
 
 bp = Blueprint('admin', __name__)
 
@@ -38,9 +35,6 @@ def dashboard():
         recent_audit = []
 
     return render_template('admin/dashboard.html', stats=stats, recent_audit=recent_audit)
-
-
-# ── Управление пользователями ────────────────────────────────
 
 @bp.route('/users')
 @login_required
@@ -108,9 +102,6 @@ def user_reset_password(user_id):
     flash('Пароль сброшен.', 'success')
     return redirect(url_for('admin.users'))
 
-
-# ── Аудит ───────────────────────────────────────────────────
-
 @bp.route('/audit')
 @login_required
 @role_required('admin', 'security_admin')
@@ -144,9 +135,6 @@ def audit():
     return render_template('admin/audit.html',
         rows=rows, total=total, page=page, per_page=per_page,
         tables=tables, table_filter=table_filter, op_filter=op_filter)
-
-
-# ── Роли ─────────────────────────────────────────────────────
 
 @bp.route('/roles')
 @login_required

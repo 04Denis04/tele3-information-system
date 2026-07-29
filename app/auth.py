@@ -1,6 +1,3 @@
-"""
-auth.py — декораторы авторизации и проверки ролей.
-"""
 from functools import wraps
 from flask import session, redirect, url_for, flash, abort
 

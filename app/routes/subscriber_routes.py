@@ -1,10 +1,7 @@
-"""
-subscriber_routes.py — управление абонентами.
-Доступ: admin, support, billing_operator, security_admin
-"""
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.db import query, execute, call_proc
 from app.auth import role_required, login_required
+from app.routes.utils import get_page
 
 bp = Blueprint('subscribers', __name__)
 

@@ -45,7 +45,7 @@
 </head>
 <body>
 
-<!-- ── Navbar ── -->
+
 <nav class="navbar navbar-dark navbar-expand-lg px-3 py-2">
   <a class="navbar-brand fw-bold me-4" href="/">
     <i class="bi bi-phone-fill me-1"></i>ТЕЛЕ<span>3</span>
@@ -65,7 +65,7 @@
 <div class="row">
 
 {% if current_user.id %}
-<!-- ── Sidebar ── -->
+
 <div class="col-lg-2 col-md-3 sidebar px-0">
   <nav class="d-flex flex-column">
 
@@ -168,7 +168,7 @@
 </div>
 {% endif %}
 
-<!-- ── Main ── -->
+
 <div class="{% if current_user.id %}col-lg-10 col-md-9{% else %}col-12{% endif %} main-content">
 
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -183,8 +183,8 @@
   {% block content %}{% endblock %}
 </div>
 
-</div><!-- /row -->
-</div><!-- /container -->
+</div>
+</div>
 
 <footer class="text-center py-2 mt-3">
   ИС «ТЕЛЕ 3» — Курсовой проект | PostgreSQL + Flask + Bootstrap 5

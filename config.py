@@ -3,8 +3,6 @@ import os
 
 class Config:
     """Конфигурация приложения из переменных окружения."""
-
-    # Значение по умолчанию допустимо только для локального запуска.
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
     DB_HOST = os.environ.get("DB_HOST", "localhost")

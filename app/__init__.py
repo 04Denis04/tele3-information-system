@@ -1,6 +1,3 @@
-"""
-app/__init__.py — фабрика Flask-приложения ТЕЛЕ 3.
-"""
 from flask import Flask, render_template, session
 from config import Config
 from app import db as db_module
@@ -9,11 +6,7 @@ from app import db as db_module
 def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static')
     app.config.from_object(Config)
-
-    # Инициализация БД
     db_module.init_app(app)
-
-    # Регистрация blueprints
     from app.routes.auth_routes       import bp as auth_bp
     from app.routes.admin_routes      import bp as admin_bp
     from app.routes.subscriber_routes import bp as sub_bp
@@ -37,8 +30,6 @@ def create_app():
     app.register_blueprint(service_bp, url_prefix='/services')
     app.register_blueprint(cabinet_bp, url_prefix='/cabinet')
     app.register_blueprint(support_bp, url_prefix='/support')
-
-    # Глобальный контекст шаблонов
     @app.context_processor
     def inject_user():
         return {
@@ -49,8 +40,6 @@ def create_app():
                 'fullname': session.get('fullname'),
             }
         }
-
-    # Обработчики ошибок
     @app.errorhandler(403)
     def forbidden(e):
         return render_template('errors/403.html'), 403
