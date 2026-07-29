@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Платежи{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4><i class="bi bi-cash-coin me-2"></i>Платежи</h4>
+  {% if current_user.role in ["admin","billing_operator"] %}
+  <a href="{{ url_for("payments.create") }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Добавить платёж</a>
+  {% endif %}
+</div>
+<div class="card p-3 mb-3">
+  <form class="d-flex gap-2" method="GET">
+    <input type="text" name="q" class="form-control form-control-sm" placeholder="Поиск по абоненту..." value="{{ search }}">
+    <button class="btn btn-primary btn-sm">Найти</button>
+  </form>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light"><tr><th>#</th><th>Абонент</th><th>Сумма</th><th>Дата</th><th>Способ оплаты</th><th>Примечание</th></tr></thead>
+      <tbody>
+      {% for p in payments %}
+        <tr>
+          <td class="text-muted small">{{ p.id }}</td>
+          <td class="fw-semibold">{{ p.subscriber_name }}</td>
+          <td class="text-success fw-bold">{{ p.amount }} ₽</td>
+          <td class="small">{{ p.payment_date.strftime("%d.%m.%Y") if p.payment_date else "—" }}</td>
+          <td><span class="badge bg-info text-dark">{{ p.payment_method }}</span></td>
+          <td class="small text-muted">{{ p.notes or "—" }}</td>
+        </tr>
+      {% else %}<tr><td colspan="6" class="text-center py-4 text-muted">Нет платежей</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="mt-2"><small class="text-muted">Всего: {{ total }}</small></div>
+{% endblock %}

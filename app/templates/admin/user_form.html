@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Создать пользователя' if not user else 'Редактировать' }}{% endblock %}
+{% block content %}
+<h4 class="mb-3"><i class="bi bi-person-gear me-2"></i>{{ 'Создать пользователя ИС' if not user else 'Редактировать пользователя' }}</h4>
+<div class="card p-4" style="max-width:500px">
+  <form method="POST">
+    <div class="mb-3">
+      <label class="form-label">Логин *</label>
+      <input type="text" name="username" class="form-control" value="{{ user.username if user else '' }}" required minlength="3">
+    </div>
+    {% if not user %}
+    <div class="mb-3">
+      <label class="form-label">Пароль *</label>
+      <input type="password" name="password" class="form-control" required minlength="6" placeholder="Минимум 6 символов">
+    </div>
+    {% endif %}
+    <div class="mb-3">
+      <label class="form-label">Роль *</label>
+      <select name="role_name" class="form-select">
+        {% for r in roles %}
+          <option value="{{ r.name }}" {% if user and user.role_name == r.name %}selected{% endif %}>{{ r.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" name="email" class="form-control" value="{{ user.email if user else '' }}">
+    </div>
+    <div class="mb-4">
+      <label class="form-label">ФИО</label>
+      <input type="text" name="full_name" class="form-control" value="{{ user.full_name if user else '' }}">
+    </div>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Пополнить счёт{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-md-5">
+    <div class="card p-4">
+      <h5 class="mb-4"><i class="bi bi-credit-card me-2 text-success"></i>Пополнение счёта</h5>
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Сумма пополнения (₽)</label>
+          <input type="number" name="amount" class="form-control" placeholder="100.00" min="10" step="0.01" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Способ оплаты</label>
+          <select name="payment_method" class="form-select">
+            <option value="card">Банковская карта</option>
+            <option value="cash">Наличные</option>
+            <option value="online">Онлайн-оплата</option>
+            <option value="transfer">Перевод</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success w-100">
+          <i class="bi bi-check-circle me-1"></i>Пополнить
+        </button>
+        <a href="{{ url_for('cabinet.my_payments') }}" class="btn btn-outline-secondary w-100 mt-2">Отмена</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

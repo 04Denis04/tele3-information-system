@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}SMS{% endblock %}
+{% block content %}
+<h4 class="mb-3"><i class="bi bi-chat-text me-2"></i>Журнал SMS</h4>
+<div class="card p-3 mb-3">
+  <form class="d-flex gap-2" method="GET">
+    <input type="text" name="q" class="form-control form-control-sm" placeholder="Поиск по номеру..." value="{{ search }}">
+    <button class="btn btn-primary btn-sm">Найти</button>
+  </form>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-sm table-hover align-middle mb-0">
+      <thead class="table-light"><tr><th>Номер</th><th>Получатель</th><th>Дата/Время</th><th>Стоимость</th></tr></thead>
+      <tbody>
+      {% for s in sms_list %}
+        <tr>
+          <td class="fw-semibold small">{{ s.phone_number }}</td>
+          <td class="small">{{ s.destination }}</td>
+          <td class="small text-muted">{{ s.sent_datetime.strftime("%d.%m.%Y %H:%M") if s.sent_datetime else "—" }}</td>
+          <td class="small">{{ s.cost }} ₽</td>
+        </tr>
+      {% else %}<tr><td colspan="4" class="text-center py-4 text-muted">Нет данных</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

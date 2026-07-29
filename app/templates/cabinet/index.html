@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><i class="bi bi-person-circle me-2 text-primary"></i>Личный кабинет</h4>
+  <a href="{{ url_for('cabinet.make_payment') }}" class="btn btn-success btn-sm">
+    <i class="bi bi-credit-card me-1"></i>Пополнить счёт
+  </a>
+</div>
+
+<!-- Профиль -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card cab-card p-4">
+      <div class="d-flex align-items-center mb-3">
+        <div class="cab-icon bg-primary bg-opacity-10 text-primary me-3"><i class="bi bi-person-fill"></i></div>
+        <div>
+          <h6 class="mb-0">{{ sub.last_name }} {{ sub.first_name }}</h6>
+          <small class="text-muted">{{ sub.middle_name or '' }}</small>
+        </div>
+      </div>
+      <hr class="my-2">
+      <p class="mb-1 small"><i class="bi bi-telephone me-2 text-muted"></i>{{ sub.phone or '—' }}</p>
+      <p class="mb-1 small"><i class="bi bi-envelope me-2 text-muted"></i>{{ sub.email or '—' }}</p>
+      <p class="mb-3 small"><i class="bi bi-geo-alt me-2 text-muted"></i>{{ sub.address or '—' }}</p>
+      <a href="{{ url_for('cabinet.change_password') }}" class="btn btn-outline-secondary btn-sm w-100">
+        <i class="bi bi-key me-1"></i>Сменить пароль
+      </a>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <!-- Quick actions -->
+    <div class="row g-2 mb-3">
+      <div class="col-6 col-md-3">
+        <a href="{{ url_for('cabinet.my_sims') }}" class="card cab-card p-3 text-center text-decoration-none text-dark">
+          <i class="bi bi-sim fs-3 text-primary mb-1"></i>
+          <div class="small fw-semibold">Мои номера</div>
+          <div class="text-muted" style="font-size:.75rem">{{ sim_cards|length }} SIM</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="{{ url_for('cabinet.my_payments') }}" class="card cab-card p-3 text-center text-decoration-none text-dark">
+          <i class="bi bi-cash-coin fs-3 text-success mb-1"></i>
+          <div class="small fw-semibold">Платежи</div>
+          <div class="text-muted" style="font-size:.75rem">История</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="{{ url_for('cabinet.my_tickets') }}" class="card cab-card p-3 text-center text-decoration-none text-dark">
+          <i class="bi bi-headset fs-3 text-warning mb-1"></i>
+          <div class="small fw-semibold">Поддержка</div>
+          <div class="text-muted" style="font-size:.75rem">{{ tickets|length }} обращений</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="{{ url_for('cabinet.my_calls') }}" class="card cab-card p-3 text-center text-decoration-none text-dark">
+          <i class="bi bi-telephone fs-3 text-info mb-1"></i>
+          <div class="small fw-semibold">Звонки</div>
+          <div class="text-muted" style="font-size:.75rem">Детализация</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- SIM-карты -->
+    <div class="card p-3 mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0"><i class="bi bi-sim me-1"></i>Мои номера</h6>
+        <a href="{{ url_for('cabinet.my_sims') }}" class="btn btn-outline-primary btn-sm">Управление</a>
+      </div>
+      {% for s in sim_cards %}
+      <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+        <div>
+          <strong>{{ s.phone_number }}</strong>
+          <span class="ms-2 badge bg-light text-dark small border">{{ s.current_tariff or 'без тарифа' }}</span>
+        </div>
+        <span class="status-{{ s.status }}">{{ s.status }}</span>
+      </div>
+      {% else %}
+      <p class="text-muted small mb-0">Нет SIM-карт. Обратитесь в поддержку.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Последние данные -->
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0"><i class="bi bi-cash me-1"></i>Последние платежи</h6>
+        <a href="{{ url_for('cabinet.my_payments') }}" class="small text-primary">Все →</a>
+      </div>
+      {% for p in payments %}
+      <div class="d-flex justify-content-between small border-bottom py-1">
+        <span class="text-muted">{{ p.payment_date.strftime("%d.%m.%Y") if p.payment_date else "—" }}</span>
+        <strong class="text-success">+{{ p.amount }} ₽</strong>
+      </div>
+      {% else %}<p class="text-muted small mb-0">Нет платежей</p>{% endfor %}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0"><i class="bi bi-telephone me-1"></i>Последние звонки</h6>
+        <a href="{{ url_for('cabinet.my_calls') }}" class="small text-primary">Все →</a>
+      </div>
+      {% for c in calls %}
+      <div class="d-flex justify-content-between small border-bottom py-1">
+        <span>{{ c.destination }}</span>
+        <span class="text-muted">{{ c.duration_min }} мин</span>
+      </div>
+      {% else %}<p class="text-muted small mb-0">Нет данных</p>{% endfor %}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0"><i class="bi bi-headset me-1"></i>Обращения</h6>
+        <a href="{{ url_for('cabinet.create_ticket') }}" class="btn btn-outline-warning btn-sm py-0 px-2">+ Создать</a>
+      </div>
+      {% for t in tickets %}
+      <div class="d-flex justify-content-between small border-bottom py-1">
+        <span class="text-truncate me-2" style="max-width:140px">{{ t.subject }}</span>
+        <span class="badge bg-{{ 'success' if t.status=='closed' else 'warning' }}">{{ t.status }}</span>
+      </div>
+      {% else %}<p class="text-muted small mb-0">Нет обращений</p>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

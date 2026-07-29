@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Ошибка сервера{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <div class="display-1 text-warning fw-bold">500</div>
+  <h4 class="mt-2">Внутренняя ошибка сервера</h4>
+  <p class="text-muted">Произошла ошибка при обработке запроса.</p>
+  {% if detail %}
+  <pre class="text-start bg-light p-3 rounded small mt-3">{{ detail }}</pre>
+  {% endif %}
+  <a href="/" class="btn btn-primary mt-2">На главную</a>
+</div>
+{% endblock %}

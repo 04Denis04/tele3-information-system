@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ "Добавить тариф" if not tariff else "Редактировать тариф" }}{% endblock %}
+{% block content %}
+<h4 class="mb-3">{{ "Добавить тариф" if not tariff else "Редактировать: " + tariff.name }}</h4>
+<div class="card p-4" style="max-width:400px">
+  <form method="POST">
+    <div class="mb-3"><label class="form-label">Название *</label>
+      <input type="text" name="name" class="form-control" value="{{ tariff.name if tariff else "" }}" required></div>
+    <div class="mb-3"><label class="form-label">Абонентская плата (₽/мес)</label>
+      <input type="number" name="monthly_fee" class="form-control" step="0.01" min="0" value="{{ tariff.monthly_fee if tariff else 0 }}"></div>
+    <div class="mb-3"><label class="form-label">Интернет (ГБ)</label>
+      <input type="number" name="internet_gb" class="form-control" min="0" value="{{ tariff.internet_gb if tariff else 0 }}"></div>
+    <div class="mb-3"><label class="form-label">Минуты</label>
+      <input type="number" name="minutes" class="form-control" min="0" value="{{ tariff.minutes if tariff else 0 }}"></div>
+    <div class="mb-4"><label class="form-label">SMS</label>
+      <input type="number" name="sms_count" class="form-control" min="0" value="{{ tariff.sms_count if tariff else 0 }}"></div>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <a href="{{ url_for("tariffs.index") }}" class="btn btn-outline-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

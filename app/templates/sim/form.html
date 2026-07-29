@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Добавить SIM{% endblock %}
+{% block content %}
+<h4 class="mb-3">Добавить SIM-карту</h4>
+<div class="card p-4" style="max-width:500px">
+  <form method="POST">
+    <div class="mb-3"><label class="form-label">Номер телефона *</label>
+      <input type="text" name="phone_number" class="form-control" required placeholder="+79161234567"></div>
+    <div class="mb-3"><label class="form-label">ICCID</label>
+      <input type="text" name="iccid" class="form-control" placeholder="19-22 цифры"></div>
+    <div class="mb-3"><label class="form-label">Дата активации</label>
+      <input type="date" name="activation_date" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Статус</label>
+      <select name="status" class="form-select">
+        <option value="active">active</option>
+        <option value="reserved">reserved</option>
+      </select>
+    </div>
+    <div class="mb-4"><label class="form-label">Абонент</label>
+      <select name="subscriber_id" class="form-select">
+        <option value="">— Не назначен —</option>
+        {% for s in subscribers %}
+        <option value="{{ s.id }}">{{ s.last_name }} {{ s.first_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <a href="{{ url_for("sim.index") }}" class="btn btn-outline-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

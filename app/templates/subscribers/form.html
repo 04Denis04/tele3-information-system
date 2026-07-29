@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ "Добавить абонента" if not sub else "Редактировать" }}{% endblock %}
+{% block content %}
+<h4 class="mb-3">{{ "Добавить абонента" if not sub else "Редактировать: " + sub.last_name }}</h4>
+<div class="card p-4" style="max-width:600px">
+  <form method="POST">
+    <div class="row g-3">
+      <div class="col-md-4"><label class="form-label">Фамилия *</label>
+        <input type="text" name="last_name" class="form-control" value="{{ sub.last_name if sub else "" }}" required></div>
+      <div class="col-md-4"><label class="form-label">Имя *</label>
+        <input type="text" name="first_name" class="form-control" value="{{ sub.first_name if sub else "" }}" required></div>
+      <div class="col-md-4"><label class="form-label">Отчество</label>
+        <input type="text" name="middle_name" class="form-control" value="{{ sub.middle_name if sub else "" }}"></div>
+      <div class="col-md-3"><label class="form-label">Серия *</label>
+        <input type="text" name="passport_series" class="form-control" value="{{ sub.passport_series if sub else "" }}" required maxlength="10"></div>
+      <div class="col-md-4"><label class="form-label">Номер паспорта *</label>
+        <input type="text" name="passport_number" class="form-control" value="{{ sub.passport_number if sub else "" }}" required></div>
+      <div class="col-md-5"><label class="form-label">Дата рождения *</label>
+        <input type="date" name="birth_date" class="form-control" value="{{ sub.birth_date.isoformat() if sub and sub.birth_date else "" }}" required></div>
+      <div class="col-md-6"><label class="form-label">Телефон</label>
+        <input type="text" name="phone" class="form-control" value="{{ sub.phone if sub else "" }}" placeholder="+79001234567"></div>
+      <div class="col-md-6"><label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ sub.email if sub else "" }}"></div>
+      <div class="col-12"><label class="form-label">Адрес</label>
+        <textarea name="address" class="form-control" rows="2">{{ sub.address if sub else "" }}</textarea></div>
+    </div>
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <a href="{{ url_for("subscribers.index") }}" class="btn btn-outline-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

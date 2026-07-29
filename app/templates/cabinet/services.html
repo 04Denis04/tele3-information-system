@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Мои услуги{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><i class="bi bi-grid-3x3-gap me-2 text-primary"></i>Подключённые услуги</h4>
+  <a href="{{ url_for('cabinet.index') }}" class="btn btn-outline-secondary btn-sm">← Назад</a>
+</div>
+{% for s in sim_cards %}
+<div class="card p-3 mb-3">
+  <h6 class="mb-3 d-flex align-items-center gap-2">
+    <i class="bi bi-sim text-primary"></i> {{ s.phone_number }}
+    <span class="badge bg-secondary small">{{ s.status }}</span>
+  </h6>
+  <div class="row g-2 mb-3">
+    {% for sv in connected.get(s.id, []) %}
+    <div class="col-md-4">
+      <div class="d-flex justify-content-between align-items-center border rounded p-2">
+        <div>
+          <div class="small fw-semibold">{{ sv.service_name }}</div>
+          <div class="text-muted" style="font-size:.75rem">{{ sv.cost or '' }} ₽/мес</div>
+        </div>
+        <form method="POST" action="{{ url_for('cabinet.toggle_service', sim_id=s.id) }}">
+          <input type="hidden" name="service_id" value="{{ sv.service_id }}">
+          <input type="hidden" name="action" value="disconnect">
+          <button class="btn btn-sm btn-outline-danger py-0 px-1" title="Отключить">✕</button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-muted small">Нет подключённых услуг</div>
+    {% endfor %}
+  </div>
+  <form method="POST" action="{{ url_for('cabinet.toggle_service', sim_id=s.id) }}" class="d-flex gap-2">
+    <select name="service_id" class="form-select form-select-sm" style="max-width:300px">
+      <option value="">Подключить услугу...</option>
+      {% for sv in all_svcs %}
+      <option value="{{ sv.id }}">{{ sv.name }} — {{ sv.cost }} ₽/мес</option>
+      {% endfor %}
+    </select>
+    <input type="hidden" name="action" value="connect">
+    <button class="btn btn-success btn-sm">Подключить</button>
+  </form>
+</div>
+{% else %}
+<div class="card p-5 text-center text-muted">
+  <p>Нет SIM-карт для управления услугами.</p>
+</div>
+{% endfor %}
+{% endblock %}

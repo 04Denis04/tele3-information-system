@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Обращение #{{ ticket.id }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><i class="bi bi-headset me-2"></i>Обращение #{{ ticket.id }}</h4>
+  <a href="{{ url_for('support.tickets') }}" class="btn btn-outline-secondary btn-sm">← Назад</a>
+</div>
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card p-3 mb-3">
+      <h6 class="text-muted mb-3">Информация об абоненте</h6>
+      <p class="mb-1"><strong>ФИО:</strong> {{ ticket.subscriber_name }}</p>
+      <p class="mb-1"><strong>Телефон:</strong> {{ ticket.subscriber_phone or '—' }}</p>
+      <p class="mb-0"><strong>Email:</strong> {{ ticket.subscriber_email or '—' }}</p>
+    </div>
+    <div class="card p-3">
+      <h6 class="mb-3">Статус обращения</h6>
+      <span class="badge fs-6 bg-{{ 'success' if ticket.status=='closed' else 'warning' if ticket.status=='open' else 'primary' }} mb-3">
+        {{ ticket.status }}
+      </span>
+      <div class="small text-muted mb-1">Создано: {{ ticket.created_at.strftime("%d.%m.%Y %H:%M") if ticket.created_at else "—" }}</div>
+      {% if ticket.resolved_at %}
+      <div class="small text-muted">Закрыто: {{ ticket.resolved_at.strftime("%d.%m.%Y %H:%M") }}</div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card p-3 mb-3">
+      <h6 class="mb-2">{{ ticket.subject }}</h6>
+      <p class="mb-0">{{ ticket.body }}</p>
+    </div>
+    {% if ticket.support_comment %}
+    <div class="card p-3 mb-3 border-primary">
+      <h6 class="text-primary mb-2"><i class="bi bi-reply me-1"></i>Ответ поддержки</h6>
+      <p class="mb-0">{{ ticket.support_comment }}</p>
+    </div>
+    {% endif %}
+    {% if current_user.role in ['admin','support'] %}
+    <div class="card p-3">
+      <h6 class="mb-3">Обработать обращение</h6>
+      <form method="POST" action="{{ url_for('support.ticket_update', ticket_id=ticket.id) }}">
+        <div class="mb-3">
+          <label class="form-label">Новый статус</label>
+          <select name="status" class="form-select">
+            <option value="open" {% if ticket.status=='open' %}selected{% endif %}>Открыто</option>
+            <option value="in_progress" {% if ticket.status=='in_progress' %}selected{% endif %}>В работе</option>
+            <option value="closed" {% if ticket.status=='closed' %}selected{% endif %}>Закрыто</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Комментарий для абонента</label>
+          <textarea name="comment" class="form-control" rows="3" placeholder="Напишите ответ абоненту...">{{ ticket.support_comment or '' }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Сохранить</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

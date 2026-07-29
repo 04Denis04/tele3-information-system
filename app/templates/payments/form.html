@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Добавить платёж{% endblock %}
+{% block content %}
+<h4 class="mb-3">Зарегистрировать платёж</h4>
+<div class="card p-4" style="max-width:450px">
+  <form method="POST">
+    <div class="mb-3"><label class="form-label">Абонент *</label>
+      <select name="subscriber_id" class="form-select" required>
+        <option value="">Выберите абонента</option>
+        {% for s in subscribers %}
+        <option value="{{ s.id }}">{{ s.last_name }} {{ s.first_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3"><label class="form-label">Сумма (₽) *</label>
+      <input type="number" name="amount" class="form-control" step="0.01" min="0.01" required placeholder="0.00"></div>
+    <div class="mb-3"><label class="form-label">Способ оплаты</label>
+      <select name="payment_method" class="form-select">
+        <option value="cash">Наличные</option>
+        <option value="card">Карта</option>
+        <option value="online">Онлайн</option>
+        <option value="terminal">Терминал</option>
+      </select>
+    </div>
+    <div class="mb-4"><label class="form-label">Примечание</label>
+      <input type="text" name="notes" class="form-control"></div>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-success">Зарегистрировать</button>
+      <a href="{{ url_for("payments.index") }}" class="btn btn-outline-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

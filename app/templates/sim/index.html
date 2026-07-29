@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}SIM-карты{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4><i class="bi bi-sim me-2"></i>SIM-карты</h4>
+  {% if current_user.role in ["admin","support"] %}
+  <a href="{{ url_for("sim.create") }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Добавить</a>
+  {% endif %}
+</div>
+<div class="card p-3 mb-3">
+  <form class="row g-2" method="GET">
+    <div class="col-md-5"><input type="text" name="q" class="form-control form-control-sm" placeholder="Поиск по номеру или абоненту..." value="{{ search }}"></div>
+    <div class="col-md-3">
+      <select name="status" class="form-select form-select-sm">
+        <option value="">Все статусы</option>
+        {% for st in ["active","blocked","terminated","reserved"] %}
+        <option value="{{ st }}" {% if st == status_f %}selected{% endif %}>{{ st }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-auto"><button class="btn btn-primary btn-sm">Найти</button>
+      <a href="{{ url_for("sim.index") }}" class="btn btn-outline-secondary btn-sm ms-1">Сброс</a></div>
+  </form>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light"><tr><th>#</th><th>Номер</th><th>Абонент</th><th>Тариф</th><th>Статус</th><th>Активация</th><th></th></tr></thead>
+      <tbody>
+      {% for s in sim_cards %}
+        <tr>
+          <td class="text-muted small">{{ s.id }}</td>
+          <td><a href="{{ url_for("sim.detail", sim_id=s.id) }}" class="fw-semibold text-decoration-none">{{ s.phone_number }}</a></td>
+          <td class="small">{{ s.subscriber_name or "—" }}</td>
+          <td class="small">{{ s.current_tariff or "—" }}</td>
+          <td><span class="status-{{ s.status }}">{{ s.status }}</span></td>
+          <td class="small text-muted">{{ s.activation_date.strftime("%d.%m.%Y") if s.activation_date else "—" }}</td>
+          <td><a href="{{ url_for("sim.detail", sim_id=s.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+        </tr>
+      {% else %}<tr><td colspan="7" class="text-center py-4 text-muted">Нет данных</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="mt-2"><small class="text-muted">Всего: {{ total }}</small></div>
+{% endblock %}

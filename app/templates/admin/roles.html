@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Роли и права{% endblock %}
+{% block content %}
+<h4 class="mb-3"><i class="bi bi-shield-lock me-2"></i>Таблица ролей и прав доступа</h4>
+<div class="card p-0">
+  <table class="table table-bordered align-middle mb-0">
+    <thead class="table-dark">
+      <tr><th>Роль</th><th>Пользователь СУБД</th><th>Абоненты</th><th>SIM</th><th>Платежи</th><th>Аудит</th><th>Пользователи</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="badge bg-dark">admin</span></td><td><code>tele3_admin</code></td>
+          <td>✅ CRUD</td><td>✅ CRUD</td><td>✅ CRUD</td><td>✅ Чтение</td><td>✅ CRUD</td></tr>
+      <tr><td><span class="badge bg-purple" style="background:#6f42c1">security_admin</span></td><td><code>tele3_security</code></td>
+          <td>👁 Чтение</td><td>👁 Чтение</td><td>👁 Чтение</td><td>✅ Чтение+</td><td>🔒 Деактивация</td></tr>
+      <tr><td><span class="badge bg-primary">support</span></td><td><code>tele3_operator</code></td>
+          <td>✅ CRUD</td><td>✅ Статус</td><td>❌</td><td>❌</td><td>❌</td></tr>
+      <tr><td><span class="badge bg-success">billing_operator</span></td><td><code>tele3_billing</code></td>
+          <td>👁 Чтение</td><td>👁 Тарифы</td><td>✅ CRUD</td><td>❌</td><td>❌</td></tr>
+      <tr><td><span class="badge bg-secondary">subscriber</span></td><td><code>tele3_app</code></td>
+          <td>👁 Свои</td><td>👁 Свои</td><td>👁 Свои</td><td>❌</td><td>❌</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="card mt-3 p-3">
+  <h6>Роли в системе</h6>
+  <table class="table table-sm">
+    <thead><tr><th>ID</th><th>Название</th><th>Описание</th></tr></thead>
+    <tbody>
+    {% for r in roles %}
+      <tr><td>{{ r.id }}</td><td><code>{{ r.name }}</code></td><td>{{ r.description or '—' }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

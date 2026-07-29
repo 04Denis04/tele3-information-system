@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Панель управления{% endblock %}
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-speedometer2 me-2"></i>Панель управления</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-2">
+    <div class="card stat-card p-3">
+      <div class="text-muted small">Абонентов</div>
+      <div class="fs-3 fw-bold">{{ stats.subscribers }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-2">
+    <div class="card stat-card p-3">
+      <div class="text-muted small">SIM-карт</div>
+      <div class="fs-3 fw-bold">{{ stats.sim_cards }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-2">
+    <div class="card stat-card green p-3">
+      <div class="text-muted small">Активных SIM</div>
+      <div class="fs-3 fw-bold text-success">{{ stats.active_sim }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-2">
+    <div class="card stat-card p-3">
+      <div class="text-muted small">Звонков сегодня</div>
+      <div class="fs-3 fw-bold">{{ stats.calls_today }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-2">
+    <div class="card stat-card green p-3">
+      <div class="text-muted small">Доходы за месяц</div>
+      <div class="fs-3 fw-bold text-success">{{ "%.0f"|format(stats.payments_month) }} ₽</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-2">
+    <div class="card stat-card p-3">
+      <div class="text-muted small">Пользователей ИС</div>
+      <div class="fs-3 fw-bold">{{ stats.users }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card p-3">
+      <h6 class="mb-3"><i class="bi bi-lightning me-1"></i>Быстрые действия</h6>
+      <div class="d-grid gap-2">
+        <a href="{{ url_for('subscribers.create') }}" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-person-plus me-1"></i> Добавить абонента
+        </a>
+        <a href="{{ url_for('admin.user_create') }}" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-person-gear me-1"></i> Создать пользователя ИС
+        </a>
+        <a href="{{ url_for('payments.create') }}" class="btn btn-outline-success btn-sm">
+          <i class="bi bi-cash-coin me-1"></i> Зарегистрировать платёж
+        </a>
+        <a href="{{ url_for('tariffs.create') }}" class="btn btn-outline-warning btn-sm">
+          <i class="bi bi-tags me-1"></i> Добавить тариф
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% if recent_audit %}
+  <div class="col-md-6">
+    <div class="card p-3">
+      <h6 class="mb-3"><i class="bi bi-journal-text me-1"></i>Последние события аудита</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+          <thead><tr><th>Таблица</th><th>Операция</th><th>Когда</th></tr></thead>
+          <tbody>
+          {% for row in recent_audit %}
+            <tr>
+              <td><code>{{ row.table_name }}</code></td>
+              <td>
+                {% if row.operation == 'INSERT' %}<span class="badge bg-success">INSERT</span>
+                {% elif row.operation == 'UPDATE' %}<span class="badge bg-warning text-dark">UPDATE</span>
+                {% else %}<span class="badge bg-danger">DELETE</span>{% endif %}
+              </td>
+              <td class="text-muted small">{{ row.changed_at.strftime('%d.%m %H:%M') if row.changed_at else '—' }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <a href="{{ url_for('admin.audit') }}" class="btn btn-link btn-sm mt-2">Весь журнал →</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

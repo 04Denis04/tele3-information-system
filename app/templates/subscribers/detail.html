@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ sub.last_name }} {{ sub.first_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4><i class="bi bi-person me-2"></i>{{ sub.last_name }} {{ sub.first_name }} {{ sub.middle_name or '' }}</h4>
+  <div class="gap-2 d-flex">
+    {% if current_user.role in ['admin','support'] %}
+    <a href="{{ url_for('subscribers.edit', sub_id=sub.id) }}" class="btn btn-outline-primary btn-sm">Редактировать</a>
+    {% endif %}
+    <a href="{{ url_for('subscribers.index') }}" class="btn btn-outline-secondary btn-sm">← Назад</a>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card p-3">
+      <h6 class="text-muted mb-3">Данные абонента</h6>
+      <p class="mb-1"><strong>Паспорт:</strong> {{ sub.passport_series or '' }} {{ sub.passport_number or '' }}</p>
+      <p class="mb-1"><strong>Дата рождения:</strong>
+        {% if sub.birth_date %}{{ sub.birth_date.strftime("%d.%m.%Y") }}{% else %}—{% endif %}
+      </p>
+      <p class="mb-1"><strong>Телефон:</strong> {{ sub.phone or '—' }}</p>
+      <p class="mb-1"><strong>Email:</strong> {{ sub.email or '—' }}</p>
+      <p class="mb-0"><strong>Адрес:</strong> {{ sub.address or '—' }}</p>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card p-3 mb-3">
+      <h6 class="mb-3"><i class="bi bi-sim me-1"></i>SIM-карты ({{ sim_cards|length }})</h6>
+      {% for s in sim_cards %}
+      <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+        <div>
+          <strong>{{ s.phone_number }}</strong>
+          <span class="ms-2 small text-muted">{{ s.current_tariff or 'без тарифа' }}</span>
+        </div>
+        <div>
+          <span class="status-{{ s.status }}">{{ s.status }}</span>
+          <a href="{{ url_for('sim.detail', sim_id=s.id) }}" class="btn btn-sm btn-link py-0">Детали →</a>
+        </div>
+      </div>
+      {% else %}<p class="text-muted small mb-0">Нет SIM-карт</p>{% endfor %}
+    </div>
+    <div class="card p-3">
+      <h6 class="mb-3"><i class="bi bi-cash me-1"></i>Последние платежи</h6>
+      {% for p in payments %}
+      <div class="d-flex justify-content-between border-bottom py-1">
+        <span class="small">
+          {% if p.payment_date %}{{ p.payment_date.strftime("%d.%m.%Y") }}{% else %}—{% endif %}
+          — {{ p.payment_method or '' }}
+        </span>
+        <strong class="text-success">{{ p.amount }} ₽</strong>
+      </div>
+      {% else %}<p class="text-muted small mb-0">Нет платежей</p>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
